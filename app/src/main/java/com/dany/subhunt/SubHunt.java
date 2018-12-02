@@ -24,6 +24,10 @@ public class SubHunt extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.d("Debugging", "In onCreate");
+        newGame();
+        draw();
     }
 
     /*
@@ -33,7 +37,7 @@ public class SubHunt extends Activity {
         and after the player wins a game.
     */
     void newGame(){
-
+        Log.d("Debugging", "In newGame");
     }
 
     /*
@@ -42,7 +46,7 @@ public class SubHunt extends Activity {
         the touch indicator
     */
     void draw() {
-
+        Log.d("Debugging", "In draw");
     }
 
     /*
@@ -52,6 +56,9 @@ public class SubHunt extends Activity {
     */
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
+        Log.d("Debugging", "In onTouchEvent");
+        takeShot();
+
         return true;
     }
 
@@ -62,7 +69,8 @@ public class SubHunt extends Activity {
         and decide a hit or miss
     */
     void takeShot(){
-
+        Log.d("Debugging", "In takeShot");
+        draw();
     }
 
     // This code says "BOOM!"
