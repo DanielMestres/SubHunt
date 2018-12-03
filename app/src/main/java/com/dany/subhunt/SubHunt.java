@@ -27,7 +27,9 @@ public class SubHunt extends Activity {
     boolean hit = false;
     int shotsTaken;
     int distanceFromSub;
-    boolean debugging = true;
+
+    // Change to true to display debug info on screen
+    boolean debugging = false;
 
     // Here are all the objects(instances)
     // of classes that we need to do some drawing
@@ -96,15 +98,27 @@ public class SubHunt extends Activity {
     void draw() {
         gameView.setImageBitmap(blankBitmap);
 
-        // Wipe the screen with a white color
-        canvas.drawColor(Color.argb(255, 255, 255, 255));
+        // Fills the screen with a dark grey color
+        canvas.drawColor(Color.argb(255, 121, 112, 112));
 
-        // Change the paint color to black
-        paint.setColor(Color.argb(255, 0, 0, 0));
+        // Change the paint color to cyan
+        paint.setColor(Color.argb(255, 93, 227, 196));
+
         // Draw the vertical lines of the grid
-        canvas.drawLine(blockSize * 1, 0, blockSize * 1, numberVerticalPixels -1, paint);
+        for(int i = 0; i < gridWidth; i++){
+            canvas.drawLine(blockSize * i, 0, blockSize * i, numberVerticalPixels, paint);
+        }
+
         // Draw the horizontal lines of the grid
-        canvas.drawLine(0, blockSize * 1, numberHorizontalPixels -1, blockSize * 1, paint);
+        for(int i = 0; i < gridHeight; i++){
+            canvas.drawLine(0, blockSize * i, numberHorizontalPixels, blockSize * i, paint);
+        }
+
+        // Change the paint color to magenta
+        paint.setColor(Color.argb(255, 200, 57, 213));
+
+        // Draw the player's shot
+        canvas.drawRect(horizontalTouched * blockSize, verticalTouched * blockSize, (horizontalTouched * blockSize) + blockSize, (verticalTouched * blockSize)+ blockSize, paint );
 
         // Re-size the text appropriate for the
         // score and distance text
@@ -113,7 +127,9 @@ public class SubHunt extends Activity {
         canvas.drawText("Shots Taken: " + shotsTaken + " Distance: " + distanceFromSub, blockSize, blockSize * 1.75f, paint);
 
         Log.d("Debugging", "In draw");
-        printDebuggingText();
+        if (debugging) {
+            printDebuggingText();
+        }
     }
 
     /*
@@ -124,8 +140,12 @@ public class SubHunt extends Activity {
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
         Log.d("Debugging", "In onTouchEvent");
-        takeShot();
-
+        // Has the player removed their finger from the screen?
+        if((motionEvent.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
+            // Process the player's shot by passing the
+            // coordinates of the player's finger to takeShot
+            takeShot(motionEvent.getX(), motionEvent.getY());
+        }
         return true;
     }
 
@@ -135,14 +155,42 @@ public class SubHunt extends Activity {
         calculate the distance from the sub'
         and decide a hit or miss
     */
-    void takeShot(){
+    void takeShot(float touchX, float touchY){
         Log.d("Debugging", "In takeShot");
-        draw();
+        // Add one to the shotsTaken variable
+        shotsTaken ++;
+        // Convert the float screen coordinates into int grid coordinates
+        horizontalTouched = (int)touchX/ blockSize;
+        verticalTouched = (int)touchY/ blockSize;
+        // Did the shot hit the sub?
+        hit = horizontalTouched == subHorizontalPosition && verticalTouched == subVerticalPosition;
+
+        // How far away horizontally and vertically was the shot from the sub
+        int horizontalGap = (int)horizontalTouched - subHorizontalPosition;
+        int verticalGap = (int)verticalTouched - subVerticalPosition;
+        // Use Pythagoras's theorem to get the distance travelled in a straight line
+        distanceFromSub = (int)Math.sqrt(((horizontalGap * horizontalGap) + (verticalGap * verticalGap)));
+        // If there is a hit call boom
+        if(hit)
+            boom();
+        // Otherwise call draw as usual
+        else draw();
     }
 
     // This code says "BOOM!"
     void boom(){
-
+        gameView.setImageBitmap(blankBitmap);
+        // Wipe the screen with a red color
+        canvas.drawColor(Color.argb(255, 255, 0, 0));
+        // Draw some huge white text
+        paint.setColor(Color.argb(255, 255, 255, 255));
+        paint.setTextSize(blockSize * 10);
+        canvas.drawText("BOOM!", blockSize * 4, blockSize * 14, paint);
+        // Draw some text to prompt restarting
+        paint.setTextSize(blockSize * 2);
+        canvas.drawText("Take a shot to start again", blockSize * 8, blockSize * 18, paint);
+        // Start a new game
+        newGame();
     }
 
     // This code prints the debugging text
