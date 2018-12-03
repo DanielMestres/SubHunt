@@ -15,6 +15,20 @@ import java.util.Random;
 
 public class SubHunt extends Activity {
 
+    int numberHorizontalPixels;
+    int numberVerticalPixels;
+    int blockSize;
+    int gridWidth = 40;
+    int gridHeight;
+    float horizontalTouched = -100;
+    float verticalTouched = -100;
+    int subHorizontalPosition;
+    int subVerticalPosition;
+    boolean hit = false;
+    int shotsTaken;
+    int distanceFromSub;
+    boolean debugging = true;
+
     /*
         Android runs this code just before
         the player sees the app.
@@ -24,6 +38,18 @@ public class SubHunt extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Gets the current device's screen resolution
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+
+        // Initialize our size based variables
+        // based on the screen resolution
+        numberHorizontalPixels = size.x;
+        numberVerticalPixels = size.y;
+        blockSize = numberHorizontalPixels / gridWidth;
+        gridHeight = numberVerticalPixels / blockSize;
 
         Log.d("Debugging", "In onCreate");
         newGame();
@@ -47,6 +73,7 @@ public class SubHunt extends Activity {
     */
     void draw() {
         Log.d("Debugging", "In draw");
+        printDebuggingText();
     }
 
     /*
@@ -80,6 +107,18 @@ public class SubHunt extends Activity {
 
     // This code prints the debugging text
     void printDebuggingText(){
-
+        Log.d("numberHorizontalPixels", "" + numberHorizontalPixels);
+        Log.d("numberVerticalPixels", "" + numberVerticalPixels);
+        Log.d("blockSize", "" + blockSize);
+        Log.d("gridWidth", "" + gridWidth);
+        Log.d("gridHeight", "" + gridHeight);
+        Log.d("horizontalTouched", "" + horizontalTouched);
+        Log.d("verticalTouched", "" + verticalTouched);
+        Log.d("subHorizontalPosition", "" + subHorizontalPosition);
+        Log.d("subVerticalPosition", "" + subVerticalPosition);
+        Log.d("hit", "" + hit);
+        Log.d("shotsTaken", "" + shotsTaken);
+        Log.d("debugging", "" + debugging);
+        Log.d("distanceFromSub", "" + distanceFromSub);
     }
 }
